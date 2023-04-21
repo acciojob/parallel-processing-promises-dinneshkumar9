@@ -1,34 +1,49 @@
 //your JS code here. If required.
 const images = [
-    { url: 'https://picsum.photos/id/1/200/300' },
-    { url: 'https://picsum.photos/id/2/200/300' },
-    { url: 'https://picsum.photos/id/3/200/300' },
-    { url: 'https://picsum.photos/id/4/200/300' },
-    { url: 'https://picsum.photos/id/5/200/300' },
-    { url: 'https://picsum.photos/id/6/200/300' },
-    { url: 'https://picsum.photos/id/7/200/300' },
-    { url: 'https://picsum.photos/id/8/200/300' },
-    { url: 'https://picsum.photos/id/9/200/300' },
-    { url: 'https://picsum.photos/id/10/200/300' },
-  ];
-  
-  const output = document.querySelector("#output");
-const downloadBtn = document.querySelector("#download-images-button");
-
-async function downloadPic() {
-  try {
-    for (const image of images) {
-      const img = await new Promise((resolve, reject) => {
-        const imgElement = new Image();
-        imgElement.onload = () => resolve(imgElement);
-        imgElement.onerror = () => reject(new Error(`Failed to load image's URL: ${image.url}`));
-        imgElement.src = image.url;
-      });
-      output.appendChild(img);
-    }
-  } catch (error) {
-    console.error(error);
+  {
+    url: "https://picsum.photos/id/237/200/300",
+    alt: "Image 1",
+  },
+  {
+    url: "https://picsum.photos/id/238/200/300",
+    alt: "Image 2",
+  },
+  {
+    url: "https://picsum.photos/id/239/200/300",
+    alt: "Image 3",
   }
+  
+];
+
+function downloadImages(images) {
+  const promises = images.map(image => {
+    return new Promise((resolve, reject) => {
+      const img = new Image();
+      img.src = image.url;
+      img.alt = image.alt;
+      img.onload = () => {
+        resolve(img);
+      };
+      img.onerror = () => {
+        reject(`Failed to load image's URL: ${image.url}`);
+      };
+    });
+  });
+
+  Promise.all(promises)
+    .then(imgs => {
+      const output = document.getElementById('output');
+		output.innerHTML = null;
+      imgs.forEach(img => {
+        output.appendChild(img);
+      });
+    })
+    .catch(error => {
+      console.error(error);
+    });
 }
 
-downloadBtn.addEventListener("click", downloadPic);
+const button = document.getElementById('download-images-button');
+button.addEventListener('click', () => {
+  downloadImages(images);
+});
